@@ -33,10 +33,51 @@ Es una función que toma dos argumentos, el primero e inicial, será el STATE, y
 Este función se va a encargar de actualizar el estado, toma este estado previo, el PAYLOAD.
 No muta el estado (Ya que es inmutable), solo crea una nueva version de el.
 
+```
+const reducer = (state, action) => newState
+```
+Ejemplo:
+
+```
+const counterReducer = (state, action) => {
+    const {type} = action
+
+    if (type === '@counter/increment') {
+        return state + 1
+    }
+
+    if (type === '@counter/decremented') {
+        return state - 1
+    }
+
+    if (type === '@counter/reseted') {
+        return 0
+    }
+}
+
+const actionIncrement = {
+    type: '@counter/incremented'
+}
+
+const actionDecremented = {
+    type: '@counter/decremented'
+}
+
+const actionReset = {
+    type: '@counter/reseted'
+}
+
+// Primer argumento es el State, y el segundo la Action
+conterReducer(0, actionIncremented) // Output: 1
+counterReducer(1, actionDecremented) // Output: 0
+counterReducer(10, actionReset) // Output: 0
+```
+Normalmente se utiliza un SWITCH, en lugar de IF, pero de todas formas tampoco lo veriamos asi.
+
 
 ## Store
 
-Aqui es donde se recibe todo el STATE de la aplicación. Es como unión de los REDUCERS.
+Aqui es donde se recibe todo el STATE de la aplicación. Es como unión de los REDUCERS y las ACTIONS.
 
 ```
 import { configureStore } from '@reduxjs/toolkit'
@@ -45,4 +86,75 @@ const store = configureStore({ reducer: conterReducer })
 
 console.log(store.getState())
 // {value: 0}
+```
+
+Ejemplo:
+
+```
+import { createStore } from 'redux'
+
+
+// Le damos un valor inicial al State
+const conterReducer = (state = 0, action) => {
+    switch (action.type) {
+        case '@counter/incremented':
+          return state + 1
+        case '@counter/decremented':
+          return state - 1
+        case '@counter/reseted':
+          return 0
+    }
+}
+
+
+// Store
+const store = createStore(counterReducer)
+
+
+// Actions
+const actionIncrement = {
+    type: '@counter/incremented'
+}
+
+const actionDecremented = {
+    type: '@counter/decremented'
+}
+
+const actionReset = {
+    type: '@counter/reseted'
+}
+
+// Le pasamos la Action
+store.dispatch(actionIncremented)
+
+// Recuperamos el State
+store.getState
+
+```
+
+### Dispatch
+
+Es una funcion que **dispara** los ACTIONS CREATORS, los envia para que se ejecute el REDUCER.
+
+```
+store.dispatch({ type: 'counter/increment' })
+
+console.log(store.getState())
+// {value: 1}
+```
+
+## Base de datos del proyecto
+
+Se utilizará, de forma práctica, una base de datos provisoria con una libreria llamada JSON-SERVER.
+
+```
+npm i json-server -D
+```
+
+Al instalarlo, lo unico q tenemos que crear, es una archivo JSON con los datos que necesitamos para este proyecto de ejemplo. Luego, vamos a modificar el SCRIPT del **package.json** colocando un nuevo comando:
+
+```
+"scripts": {
+"server": "json-server --watch db.json"
+}
 ```
