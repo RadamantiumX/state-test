@@ -124,24 +124,112 @@ const actionReset = {
     type: '@counter/reseted'
 }
 
-// Le pasamos la Action
-store.dispatch(actionIncremented)
 
-// Recuperamos el State
-store.getState
+
+
 
 ```
 
 ### Dispatch
 
-Es una funcion que **dispara** los ACTIONS CREATORS, los envia para que se ejecute el REDUCER.
+Es una funcion que **Despacha** los ACTIONS CREATORS, los envia para que se ejecute el REDUCER. Complementa el codigo anterior.
 
 ```
-store.dispatch({ type: 'counter/increment' })
+// Le pasamos la Action
+store.dispatch(actionIncremented)
 
-console.log(store.getState())
-// {value: 1}
+// Recuperamos el State
+store.getState() // Output: 1 (Recordemos, mas arriba, que el State inicial es = 0)
+
+// Utilizando el "subscribe()"
+// Cada vez q detecta un cambio en la Store, ejecuta (otra vez) el "getState()"
+store.subscribe(() => {
+    console.log(store.getState())  
+})
 ```
+
+## Uso Basico en una apliacion React
+
+```
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { createStore } from 'redux'
+
+// Actions
+const actionIncremented = {
+    type: '@counter/incremented'
+}
+
+const actionDecremented = {
+    type: '@counter/decremented'
+}
+
+const actionReset = {
+    type: '@counter/reseted'
+}
+
+// Reducer
+const counterReducer = (state = 0, action) => {
+    switch (action.type) {
+        case '@counter/incremented':
+          return state + 1
+        case '@counter/decremented':
+          return state - 1
+        case '@counter/reseted':
+          return 0  
+        default:
+          return state
+    }
+}
+
+// Store
+const store = createStore(counterReducer)
+
+
+
+const App = () => {
+    return (
+        <div>
+        <div>
+          {store.getState()}
+        </div>
+        {/* Creamos los botones con las ACTIONS */}
+          <button 
+            onClick={() => store.dispatch(actionIncremented)}
+          >
+          +
+          </button>
+          <button 
+            onClick={() => store.dispatch(actionDecremented)}
+          >
+          -
+          </button>
+          <button 
+            onClick={() => store.dispatch(actionReset)}
+          >
+          reset
+          </button>
+        </div>
+    )
+}
+
+// Esta funcion solo ejecutara una vez
+const renderApp = () => {
+ReactDOM.render(
+      <App />
+    document.getElementById('root')
+)
+}
+
+renderApp()
+// La utilizamos como funcion de primera clase
+// Es decir, la tratamos como una variable
+// Cada cambio q tenga la Store
+// haga que RENDERIZE de nuevo la app
+store.subscribe(renderApp)
+```
+Todo esto hace que el ESTADO de la aplicacion este totalmente separado de REACT (en este caso, puede ser VUE), es decir, como se puede ver no utilizamos en ningun momento el "useState()"
+
 
 ## Base de datos del proyecto
 
